@@ -9,7 +9,7 @@ class LoggerTest extends PHPUnit_Framework_TestCase
     $this->logger = new Logger('test.log');
   }
 
-  protected  function tearDown()
+  protected function tearDown()
   {
       unlink($this->logger->getDirectory().'/'.$this->logger->getFilename());
   }

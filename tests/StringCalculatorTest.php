@@ -7,13 +7,13 @@ class StringCalculatorTest extends PHPUnit_Framework_TestCase
 
   protected function setUp()
   {
-    $this->stringCalculator = new StringCalculator(new Logger('StringCalculator.log'));
-  }
-
-  protected function tearDown()
-  {
-    $logger = $this->stringCalculator->getLogger();
-    unlink($logger->getDirectory().'/'.$logger->getFilename());
+    $loggerStub = $this->getMockBuilder('Logger')
+    ->disableOriginalConstructor()
+    ->getMock();
+    $exceptionServiceStub = $this->getMockBuilder('Logger')
+    ->disableOriginalConstructor()
+    ->getMock();
+    $this->stringCalculator = new StringCalculator($loggerStub, $exceptionServiceStub);
   }
 
   public function testAddEmpty()
@@ -108,15 +108,38 @@ class StringCalculatorTest extends PHPUnit_Framework_TestCase
     ->setMethods(array('write'))
     ->setConstructorArgs(array('test.log'))
     ->getMock();
-    
+
     $logger->expects($this->exactly(3))
     ->method('write')
     ->withConsecutive(array(0), array(1), array(3));
 
-    $this->stringCalculator = new StringCalculator($logger);
+    $this->stringCalculator->setLogger($logger);
 
     $this->stringCalculator->add('');
     $this->stringCalculator->add('1');
     $this->stringCalculator->add('1,2');
+  }
+
+  public function testNotifyExceptionServiceWhenLoggerThrows()
+  {
+    $exceptionMessage = 'exceptionMessage';
+
+    $loggerStub = $this->getMockBuilder('Logger')
+    ->disableOriginalConstructor()
+    ->getMock();
+    $exceptionServiceMock = $this->getMockBuilder('ExceptionService')
+    ->setMethods(array('notify'))
+    ->getMock();
+
+    $exceptionServiceMock->expects($this->once())
+    ->method('notify')
+    ->with($this->equalTo($exceptionMessage));
+
+    $loggerStub->method('write')
+    ->will($this->throwException(new Exception($exceptionMessage)));
+
+    $this->stringCalculator->setLogger($loggerStub);
+    $this->stringCalculator->setExceptionService($exceptionServiceMock);
+    $this->stringCalculator->add('');
   }
 }

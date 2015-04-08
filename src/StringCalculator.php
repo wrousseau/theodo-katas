@@ -4,10 +4,12 @@ class StringCalculator
 {
 
   private $logger;
+  private $exceptionService;
 
-  public function __construct($logger)
+  public function __construct($logger, $exceptionService)
   {
     $this->logger = $logger;
+    $this->exceptionService = $exceptionService;
   }
 
   public function getLogger()
@@ -18,6 +20,16 @@ class StringCalculator
   public function setLogger($logger)
   {
     $this->logger = $logger;
+  }
+
+  public function getExceptionService()
+  {
+    return $this->exceptionService;
+  }
+
+  public function setExceptionService($exceptionService)
+  {
+    $this->exceptionService = $exceptionService;
   }
 
   public function Add($str)
@@ -62,7 +74,13 @@ class StringCalculator
     {
       throw new InvalidArgumentException('negatives not allowed : '.implode(',', $negativeNumbers));
     }
-    $this->logger->write($sum);
+
+    try {
+      $this->logger->write($sum);
+    } catch (Exception $e) {
+      $this->exceptionService->notify($e->getMessage());
+    }
+
     return $sum;
   }
 }
