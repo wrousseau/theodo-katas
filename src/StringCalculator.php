@@ -2,6 +2,24 @@
 
 class StringCalculator
 {
+
+  private $logger;
+
+  public function __construct($logger)
+  {
+    $this->logger = $logger;
+  }
+
+  public function getLogger()
+  {
+    return $this->logger;
+  }
+
+  public function setLogger($logger)
+  {
+    $this->logger = $logger;
+  }
+
   public function Add($str)
   {
     // Is there a first line giving delimiters ?
@@ -44,6 +62,7 @@ class StringCalculator
     {
       throw new InvalidArgumentException('negatives not allowed : '.implode(',', $negativeNumbers));
     }
+    $this->logger->write($sum);
     return $sum;
   }
 }

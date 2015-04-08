@@ -7,7 +7,13 @@ class StringCalculatorTest extends PHPUnit_Framework_TestCase
 
   protected function setUp()
   {
-    $this->stringCalculator = new StringCalculator();
+    $this->stringCalculator = new StringCalculator(new Logger('StringCalculator.log'));
+  }
+
+  protected function tearDown()
+  {
+    $logger = $this->stringCalculator->getLogger();
+    unlink($logger->getDirectory().'/'.$logger->getFilename());
   }
 
   public function testAddEmpty()
@@ -47,8 +53,8 @@ class StringCalculatorTest extends PHPUnit_Framework_TestCase
   }
 
   /**
-   * @expectedException        InvalidArgumentException
-   * @expectedExceptionMessage negatives not allowed
+  * @expectedException        InvalidArgumentException
+  * @expectedExceptionMessage negatives not allowed
   */
   public function testAddNegativeNumber()
   {
@@ -57,8 +63,8 @@ class StringCalculatorTest extends PHPUnit_Framework_TestCase
   }
 
   /**
-   * @expectedException        InvalidArgumentException
-   * @expectedExceptionMessage negatives not allowed : -2,-4
+  * @expectedException        InvalidArgumentException
+  * @expectedExceptionMessage negatives not allowed : -2,-4
   */
   public function testAddNegativeNumbersInMessage()
   {
@@ -94,5 +100,23 @@ class StringCalculatorTest extends PHPUnit_Framework_TestCase
   {
     $str = "//[***][%]\n1***2%3";
     $this->assertEquals(6, $this->stringCalculator->add($str));
+  }
+
+  public function testWritingInLogger()
+  {
+    $logger = $this->getMockBuilder('Logger')
+    ->setMethods(array('write'))
+    ->setConstructorArgs(array('test.log'))
+    ->getMock();
+    
+    $logger->expects($this->exactly(3))
+    ->method('write')
+    ->withConsecutive(array(0), array(1), array(3));
+
+    $this->stringCalculator = new StringCalculator($logger);
+
+    $this->stringCalculator->add('');
+    $this->stringCalculator->add('1');
+    $this->stringCalculator->add('1,2');
   }
 }
