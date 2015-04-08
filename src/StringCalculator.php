@@ -32,7 +32,7 @@ class StringCalculator
     $this->exceptionService = $exceptionService;
   }
 
-  public function Add($str)
+  public function add($str, $print = true)
   {
     // Is there a first line giving delimiters ?
     preg_match("#^//(.+)?\n(.+)#", $str, $matches);
@@ -80,7 +80,16 @@ class StringCalculator
     } catch (Exception $e) {
       $this->exceptionService->notify($e->getMessage());
     }
+    if ($print)
+    {
+      $this->printResult(strval($sum)."\n");
+    }
 
     return $sum;
+  }
+
+  public function printResult($result)
+  {
+    echo $result;
   }
 }

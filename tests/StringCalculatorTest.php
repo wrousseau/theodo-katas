@@ -13,7 +13,10 @@ class StringCalculatorTest extends PHPUnit_Framework_TestCase
     $exceptionServiceStub = $this->getMockBuilder('Logger')
     ->disableOriginalConstructor()
     ->getMock();
-    $this->stringCalculator = new StringCalculator($loggerStub, $exceptionServiceStub);
+    $this->stringCalculator = $this->getMockBuilder('StringCalculator')
+    ->setConstructorArgs(array($loggerStub, $exceptionServiceStub))
+    ->setMethods(array('printResult'))
+    ->getMock();
   }
 
   public function testAddEmpty()
@@ -141,5 +144,21 @@ class StringCalculatorTest extends PHPUnit_Framework_TestCase
     $this->stringCalculator->setLogger($loggerStub);
     $this->stringCalculator->setExceptionService($exceptionServiceMock);
     $this->stringCalculator->add('');
+  }
+
+  public function testPrintResult()
+  {
+    $loggerStub = $this->getMockBuilder('Logger')
+    ->disableOriginalConstructor()
+    ->getMock();
+    $exceptionServiceStub = $this->getMockBuilder('Logger')
+    ->disableOriginalConstructor()
+    ->getMock();
+
+    $this->stringCalculator->expects($this->once())
+    ->method('printResult')
+    ->with($this->equalTo("6\n"));
+
+    $this->stringCalculator->add('1,2,3');
   }
 }
