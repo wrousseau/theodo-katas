@@ -9,7 +9,7 @@ class ScalcTest extends PHPUnit_Framework_TestCase
     $this->logger = new Logger('test.log');
   }
 
-  public function testGetDirectory()
+  public function testPrintResult()
   {
     $mock = $this->getMockBuilder('Scalc')
     ->setMethods(array('printResult'))
