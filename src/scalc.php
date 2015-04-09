@@ -1,10 +1,4 @@
-#!/usr/bin/php
-
 <?php
-
-require_once "StringCalculator.php";
-require_once "Logger.php";
-require_once "ExceptionService.php";
 
 class Scalc
 {
