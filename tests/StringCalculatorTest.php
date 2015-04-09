@@ -21,7 +21,7 @@ class StringCalculatorTest extends PHPUnit_Framework_TestCase
 
   public function testAddEmpty()
   {
-    $this->assertEquals(1, $this->stringCalculator->add(''));
+    $this->assertEquals(0, $this->stringCalculator->add(''));
   }
 
   public function testAddOneNumber()
